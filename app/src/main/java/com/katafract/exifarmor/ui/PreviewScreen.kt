@@ -1,6 +1,5 @@
 package com.katafract.exifarmor.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,11 +14,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
-import androidx.compose.material3.Chip
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import kotlin.OptIn
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +33,7 @@ import coil.compose.AsyncImage
 import com.katafract.exifarmor.models.PhotoMetadata
 import com.katafract.exifarmor.models.StripOptions
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreviewScreen(
     photos: List<PhotoMetadata>,
@@ -76,32 +78,20 @@ fun PreviewScreen(
                     .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Chip(
+                FilterChip(
+                    selected = currentOptions == StripOptions.ALL,
                     onClick = { onOptionsChanged(StripOptions.ALL) },
                     label = { Text("All") },
-                    modifier = if (currentOptions == StripOptions.ALL) {
-                        Modifier.background(MaterialTheme.colorScheme.primary)
-                    } else {
-                        Modifier
-                    },
                 )
-                Chip(
+                FilterChip(
+                    selected = currentOptions == StripOptions.LOCATION_ONLY,
                     onClick = { onOptionsChanged(StripOptions.LOCATION_ONLY) },
                     label = { Text("Location") },
-                    modifier = if (currentOptions == StripOptions.LOCATION_ONLY) {
-                        Modifier.background(MaterialTheme.colorScheme.primary)
-                    } else {
-                        Modifier
-                    },
                 )
-                Chip(
+                FilterChip(
+                    selected = currentOptions == StripOptions.PRIVACY_FOCUSED,
                     onClick = { onOptionsChanged(StripOptions.PRIVACY_FOCUSED) },
                     label = { Text("Privacy") },
-                    modifier = if (currentOptions == StripOptions.PRIVACY_FOCUSED) {
-                        Modifier.background(MaterialTheme.colorScheme.primary)
-                    } else {
-                        Modifier
-                    },
                 )
             }
         }
