@@ -12,12 +12,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -39,60 +45,109 @@ import com.katafract.exifarmor.models.StripOptions
 fun PreviewScreen(
     photos: List<PhotoMetadata>,
     currentOptions: StripOptions,
+    isPro: Boolean = false,
     onOptionsChanged: (StripOptions) -> Unit,
     onStrip: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
     ) {
         // Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.onBackground,
+                )
+            }
+
             Text(
-                text = "Preview (${photos.size} photos)",
-                fontSize = 20.sp,
+                text = "Review Photos",
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center,
             )
+
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            ) {
+                Text(
+                    text = "${photos.size}",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
         }
 
         // Strip Options
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
             Text(
-                text = "Strip Options",
-                fontSize = 14.sp,
+                text = "Cleanup Preset",
+                fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground,
             )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp),
+                    .padding(top = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 FilterChip(
-                    selected = currentOptions == StripOptions.ALL,
-                    onClick = { onOptionsChanged(StripOptions.ALL) },
-                    label = { Text("All") },
-                )
-                FilterChip(
                     selected = currentOptions == StripOptions.LOCATION_ONLY,
                     onClick = { onOptionsChanged(StripOptions.LOCATION_ONLY) },
-                    label = { Text("Location") },
+                    label = { Text("Minimal", fontSize = 11.sp) },
+                    modifier = Modifier.height(32.dp),
                 )
                 FilterChip(
                     selected = currentOptions == StripOptions.PRIVACY_FOCUSED,
                     onClick = { onOptionsChanged(StripOptions.PRIVACY_FOCUSED) },
-                    label = { Text("Privacy") },
+                    label = { Text("Privacy", fontSize = 11.sp) },
+                    modifier = Modifier.height(32.dp),
+                )
+                FilterChip(
+                    selected = currentOptions == StripOptions.ALL,
+                    onClick = { onOptionsChanged(StripOptions.ALL) },
+                    label = { Text("Full Clean", fontSize = 11.sp) },
+                    modifier = Modifier.height(32.dp),
+                )
+            }
+        }
+
+        // Free tier warning
+        if (!isPro && photos.size > 5) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFFECE51).copy(alpha = 0.15f))
+                    .padding(12.dp),
+            ) {
+                Text(
+                    text = "Free tier: only first 5 will be processed. Upgrade for unlimited.",
+                    fontSize = 11.sp,
+                    color = Color(0xFFB8860B),
                 )
             }
         }
@@ -102,7 +157,7 @@ fun PreviewScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
                 horizontal = 16.dp,
                 vertical = 8.dp,
@@ -113,29 +168,23 @@ fun PreviewScreen(
             }
         }
 
-        // Action Buttons
-        Row(
+        // Action Button
+        Button(
+            onClick = onStrip,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(16.dp)
+                .height(48.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+            ),
+            shape = RoundedCornerShape(12.dp),
         ) {
-            Button(
-                onClick = onBack,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-            ) {
-                Text("Back")
-            }
-            Button(
-                onClick = onStrip,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-            ) {
-                Text("Strip Metadata")
-            }
+            Text(
+                text = "Strip All",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
     }
 }
@@ -148,82 +197,116 @@ fun PhotoPreviewCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surface),
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(12.dp),
     ) {
-        // Thumbnail
-        AsyncImage(
-            model = photo.uri,
-            contentDescription = photo.filename,
+        // Thumbnail + Filename
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp)
-                .clip(MaterialTheme.shapes.medium),
-            contentScale = ContentScale.Crop,
-        )
-
-        // Info
-        Column(
-            modifier = Modifier.padding(12.dp),
+                .padding(bottom = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.Top,
         ) {
-            Text(
-                text = photo.filename,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
+            AsyncImage(
+                model = photo.uri,
+                contentDescription = photo.filename,
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.Crop,
             )
 
-            if (photo.hasGps) {
-                Row(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .background(
-                            color = Color.Red.copy(alpha = 0.1f),
-                            shape = MaterialTheme.shapes.small,
-                        )
-                        .padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.LocationOn,
-                        contentDescription = "GPS found",
-                        modifier = Modifier.size(16.dp),
-                        tint = Color.Red,
-                    )
-                    Text(
-                        text = " GPS location detected",
-                        fontSize = 12.sp,
-                        color = Color.Red,
-                    )
+            Column(
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(
+                    text = photo.filename,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+
+                // Risk indicator
+                val hasRisk = photo.hasGps || !photo.deviceMake.isNullOrBlank()
+                val riskText = when {
+                    photo.hasGps -> "High risk: GPS detected"
+                    !photo.deviceMake.isNullOrBlank() -> "Medium risk: Device info"
+                    else -> "Low risk: Clean"
                 }
+                val riskColor = when {
+                    photo.hasGps -> Color(0xFFEF4444)
+                    !photo.deviceMake.isNullOrBlank() -> Color(0xFFF59E0B)
+                    else -> Color(0xFF10B981)
+                }
+
+                Text(
+                    text = riskText,
+                    fontSize = 10.sp,
+                    color = riskColor,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+        }
+
+        // Metadata details
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(6.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            if (photo.hasGps) {
+                MetadataRow(label = "GPS", value = "Yes", color = Color(0xFFEF4444))
             }
 
             if (!photo.deviceMake.isNullOrBlank() || !photo.deviceModel.isNullOrBlank()) {
-                Text(
-                    text = "Device: ${photo.deviceMake ?: "?"} ${photo.deviceModel ?: "?"}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp),
+                MetadataRow(
+                    label = "Device",
+                    value = "${photo.deviceMake ?: "Unknown"} ${photo.deviceModel ?: ""}".trim(),
                 )
             }
 
             if (!photo.dateTimeOriginal.isNullOrBlank()) {
-                Text(
-                    text = "Taken: ${photo.dateTimeOriginal}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 2.dp),
-                )
+                MetadataRow(label = "Timestamp", value = photo.dateTimeOriginal!!)
             }
 
             if (photo.pixelWidth != null && photo.pixelHeight != null) {
-                Text(
-                    text = "${photo.pixelWidth}×${photo.pixelHeight}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 2.dp),
-                )
+                MetadataRow(label = "Resolution", value = "${photo.pixelWidth}×${photo.pixelHeight}")
             }
         }
+    }
+}
+
+@Composable
+private fun MetadataRow(
+    label: String,
+    value: String,
+    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = label,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = value,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = color,
+            maxLines = 1,
+        )
     }
 }

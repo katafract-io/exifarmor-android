@@ -19,6 +19,9 @@ private val LightColorScheme = lightColorScheme(
     error = ErrorColor,
     background = Color(0xFFFAFAFA),
     surface = Color(0xFFFFFFFF),
+    surfaceVariant = Color(0xFFF3F4F6),
+    onBackground = Color(0xFF1F2937),
+    onSurfaceVariant = Color(0xFF6B7280),
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -28,6 +31,9 @@ private val DarkColorScheme = darkColorScheme(
     error = ErrorColor,
     background = Color(0xFF0F172A),
     surface = Color(0xFF1E293B),
+    surfaceVariant = Color(0xFF334155),
+    onBackground = Color(0xFFF8FAFC),
+    onSurfaceVariant = Color(0xFF94A3B8),
 )
 
 @Composable
@@ -46,3 +52,8 @@ fun ExifArmorTheme(
         content = content,
     )
 }
+
+// Helper extension for onBackgroundVariant
+val androidx.compose.material3.ColorScheme.onBackgroundVariant: Color
+    @Composable
+    get() = onSurfaceVariant
