@@ -35,3 +35,8 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleDebug
+
+  adversarial-review:
+    name: Adversarial review (claude)
+    uses: katafract-io/ci-workflows/.github/workflows/_adversarial-review.yml@main
+    secrets: inherit
