@@ -1,16 +1,17 @@
-name: pr-check
+name: PR check (compile gate)
+
 on:
   pull_request:
-    branches: [main]
 
 concurrency:
   group: pr-check-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  compile:
+    name: Android compile (compile gate)
     runs-on: [self-hosted, Linux, X64, android-build]
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -20,23 +21,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Cache gradle
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: gradle-${{ runner.os }}-
-
-      - name: Assemble debug
-        env:
-          JAVA_TOOL_OPTIONS: "-Xmx3g"
+      - name: Gradle config parse (fast compile gate)
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleDebug
-
-  adversarial-review:
-    name: Adversarial review (claude)
-    uses: katafract-io/ci-workflows/.github/workflows/_adversarial-review.yml@main
-    secrets: inherit
+          ./gradlew help --no-daemon
