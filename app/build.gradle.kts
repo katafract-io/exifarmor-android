@@ -81,7 +81,7 @@ dependencies {
     implementation(libs.gson)
 
     // Google Play Billing
-    implementation("com.android.billingclient:billing-ktx:7.1.1")
+    implementation("com.android.billingclient:billing-ktx:9.1.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
